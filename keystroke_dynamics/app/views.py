@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import render_to_response
 
-<<<<<<< HEAD
+
 def send_otp(request):
 	num = "9769953291"
 	conn = http.client.HTTPConnection("2factor.in")
@@ -39,7 +39,7 @@ def verify_otp(request):
 	res = conn.getresponse()
 	data = res.read()	
 	print(data.decode("utf-8"))
-||||||| merged common ancestors
+    merged common ancestors
 def send_otp(request):
 	conn = http.client.HTTPConnection("2factor.in")
 	OTP.objects.create(number = '9769953291')
@@ -76,9 +76,9 @@ def verify_otp(request):
 	res = conn.getresponse()
 	data = res.read()	
 	print(data.decode("utf-8"))
-=======
+
 # Create your views here.
->>>>>>> 5bafc5ade7e614bff121299509a0a44dea80cb3a
+
 
 def login(request):
 	return render(request,'login.html')

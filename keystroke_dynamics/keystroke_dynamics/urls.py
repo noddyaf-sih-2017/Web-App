@@ -26,4 +26,6 @@ urlpatterns = [
     url(r'^table/', views.table),
     url(r'^contacts/', views.contacts),
     url(r'^projects/', views.projects),
+    url(r'^project_detail/', views.project_detail),
+    url(r'^profile/', views.profile),
 ]

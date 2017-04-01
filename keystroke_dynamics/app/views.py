@@ -18,7 +18,10 @@ def verify_otp(request):
 
 def table(request):
 	return render(request,'tables_dynamic.html')
+<<<<<<< HEAD
 
+=======
+>>>>>>> e4b469a5126b82617e016763d82dc1396781502a
 
 def contacts(request):
 	return render(request,'contacts.html')
@@ -26,9 +29,12 @@ def contacts(request):
 def projects(request):
 	return render(request,'projects.html')
 
+<<<<<<< HEAD
 
 def project_detail(request):
 	return render(request,'project_detail.html')	
 
 def profile(request):
 	return render(request,'profile.html')
+=======
+>>>>>>> e4b469a5126b82617e016763d82dc1396781502a

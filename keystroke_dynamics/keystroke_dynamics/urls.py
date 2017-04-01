@@ -21,4 +21,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^login/', views.login),
     url(r'^index/', views.index),
+    url(r'^send_otp/', views.send_otp),
+    url(r'^verify_otp/', views.verify_otp),
 ]

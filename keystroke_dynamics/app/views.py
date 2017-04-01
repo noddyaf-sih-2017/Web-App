@@ -10,4 +10,8 @@ def login(request):
 def index(request):
 	return render(request,'index.html')
 
+def send_otp(request):
+	return render(request,'send_otp.html')
 
+def verify_otp(request):
+	return render(request,'verify_otp.html')

@@ -6,10 +6,11 @@ from app.models import OTP
 from django.shortcuts import render_to_response
 
 def send_otp(request):
+	num = "9769953291"
 	conn = http.client.HTTPConnection("2factor.in")
 	OTP.objects.create(number = '9769953291')
 	payload = "{}"
-	url = "/API/V1/643743b1-1698-11e7-9462-00163ef91450/SMS/"+number+"/AUTOGEN/ABCDEF"
+	url = "/API/V1/643743b1-1698-11e7-9462-00163ef91450/SMS/"+num+"/AUTOGEN/ABCDEF"
 	conn.request("GET", url, payload)
 	res = conn.getresponse()
 	data = res.read()

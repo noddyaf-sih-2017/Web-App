@@ -13,13 +13,8 @@ def index(request):
 def send_otp(request):
 	return render(request,'send_otp.html')
 
-<<<<<<< HEAD
 def verify_otp(request):
 	return render(request,'verify_otp.html')
-=======
+
 def table(request):
 	return render(request,'tables_dynamic.html')
-
-
-
->>>>>>> d5aaf4de050640cfdca93c0b2e6c4bca46b74fbe

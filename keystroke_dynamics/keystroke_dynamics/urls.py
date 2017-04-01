@@ -21,10 +21,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^login/', views.login),
     url(r'^index/', views.index),
-<<<<<<< HEAD
     url(r'^send_otp/', views.send_otp),
     url(r'^verify_otp/', views.verify_otp),
-=======
     url(r'^table/', views.table),
->>>>>>> d5aaf4de050640cfdca93c0b2e6c4bca46b74fbe
 ]

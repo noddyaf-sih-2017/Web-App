@@ -1,0 +1,14 @@
+{ % load staticfiles % }
+<div class="navbar navbar-inverse navbar-fixed-top">
+<div class="container">
+<div class ="navbar-header">
+<div class="navbar-collapse-collapse">
+<ul class="nav navbar-nav navbar-center">
+<li {% if view_is_index %} class ="active" {% endif %}>
+<a href="{% url 'index' %}">HOME</a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>

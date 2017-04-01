@@ -14,5 +14,8 @@ def index(request):
 def table(request):
 	return render(request,'tables_dynamic.html')
 
+def contacts(request):
+	return render(request,'contacts.html')
 
-
+def projects(request):
+	return render(request,'projects.html')

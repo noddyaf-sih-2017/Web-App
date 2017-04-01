@@ -68,7 +68,3 @@ def project_detail(request):
 
 def profile(request):
 	return render(request,'profile.html')
-<<<<<<< HEAD
-=======
-
->>>>>>> 844eb260f02a9464397d77ff974ca89b88390f63

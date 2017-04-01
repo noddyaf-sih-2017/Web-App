@@ -24,4 +24,6 @@ urlpatterns = [
     url(r'^send_otp/', views.send_otp),
     url(r'^verify_otp/', views.verify_otp),
     url(r'^table/', views.table),
+    url(r'^contacts/', views.contacts),
+    url(r'^projects/', views.projects),
 ]

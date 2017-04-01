@@ -73,4 +73,4 @@ def preprocess(dataS):
 	finS = formatData(json.loads('[' + dataS[:-1] + ']'))
 	dfS = pd.DataFrame(finS)
 	dfS.fillna(dfS.mean(), inplace=True)
-	return dfS.to_csv(index=False)
+	return dfS.to_csv(index=False, header=None)

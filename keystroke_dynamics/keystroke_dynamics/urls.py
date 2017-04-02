@@ -20,6 +20,8 @@ from app import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^index/', views.index),
+    url(r'^register/', views.register),
+    url(r'^train/', views.train),
     url(r'^send_otp/', views.send_otp),
     url(r'^verify_otp/', views.verify_otp),
     url(r'^table/', views.table),

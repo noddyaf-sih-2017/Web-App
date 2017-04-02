@@ -18,7 +18,7 @@ $(document).ready(function() {
     elem.append($ripple);
   };
   
-  $(document).on("click", ".login__submit", function(e) {
+  /*$(document).on("click", ".login__submit", function(e) {
     if (animating) return;
     animating = true;
     var that = this;
@@ -38,7 +38,7 @@ $(document).ready(function() {
         $(that).removeClass("success processing");
       }, submitPhase2);
     }, submitPhase1);
-  });
+  });*/
   
   $(document).on("click", ".app__logout", function(e) {
     if (animating) return;

@@ -116,6 +116,103 @@ for epoch in range(n_epoch):
 
     print("Epoch %d G:%f  D:%f" % (epoch, np.mean(err_G), np.mean(err_D)))
 
+seq_len = 50
+data_1 = []
+skipped_first_line = 0
+with open(os.path.join(BASE, 'Saumitra2' + '.csv')) as f:
+    for line in f.readlines():
+        if skipped_first_line < 2:
+            skipped_first_line += 1
+            continue
+        else:
+            line = line.strip().split(',')
+            d = [int(float(x)) for x in line[1:]]
+            data_1.append(d)
+
+splitted_data = []
+for i in range(len(data_1) - seq_len):
+    splitted_data.append(data_1[i:i + seq_len])
+
+######################### Neural Network #######################
+
+z_dim_1 = 5
+batch_size_1 = 40
+n_epoch_1 = 100
+rnn_neurons_1 = 5
+
+X_1 = tf.placeholder(tf.float32, shape=[None, seq_len, 7])
+
+D_W1_1 = tf.Variable(xavier_init([rnn_neurons_1, 4]))
+D_b1_1 = tf.Variable(tf.zeros(shape=[4]))
+
+D_W2_1 = tf.Variable(xavier_init([4, 1]))
+D_b2_1 = tf.Variable(tf.zeros(shape=[1]))
+
+theta_D_1 = [D_W1_1, D_W2_1, D_b1_1, D_b2_1]
+
+Z_1 = tf.placeholder(tf.float32, shape=[None, seq_len, z_dim_1])
+
+R_W1_1 = tf.Variable(xavier_init([rnn_neurons_1, 4]))
+R_b1_1 = tf.Variable(tf.zeros(shape=[4]))
+
+G_W2_1 = tf.Variable(xavier_init([4, 7]))
+G_b2_1 = tf.Variable(tf.zeros(shape=[7]))
+
+theta_G_1 = [R_W1_1, G_W2_1, R_b1_1, G_b2_1]
+
+def sample_Z_1(m, n):
+    return np.random.uniform(-1., 1., size=[m, seq_len, n])
+
+with tf.variable_scope('lstm1_1'):
+    lstm_1_1 = tf.contrib.rnn.BasicLSTMCell(rnn_neurons_1)
+    lstm_op_1_1, _ = tf.nn.dynamic_rnn(lstm_1_1, Z_1, dtype=tf.float32)
+    G_h1_1 = tf.map_fn(lambda x: tf.nn.relu(tf.matmul(x, R_W1_1) + R_b1_1), lstm_op_1_1)
+    G_sample_1 = tf.map_fn(lambda x: tf.nn.sigmoid(tf.matmul(x, G_W2_1) + G_b2_1), G_h1_1)
+
+with tf.variable_scope('lstm2_1'):
+    lstm_2_1 = tf.contrib.rnn.BasicLSTMCell(rnn_neurons_1)
+    lstm_op_2_1, _ = tf.nn.dynamic_rnn(lstm_2_1, X_1, dtype=tf.float32)
+    D_h1_1 = tf.map_fn(lambda y: tf.nn.relu(tf.matmul(y, D_W1_1) + D_b1_1), lstm_op_2_1)
+    D_logit_real_1 = tf.matmul(D_h1_1[-1], D_W2_1) + D_b2_1
+    D_real_1 = tf.nn.relu(D_logit_real_1)
+
+with tf.variable_scope('lstm3_1'):
+    lstm_op_3_1, _ = tf.nn.dynamic_rnn(lstm_2_1, G_sample_1, dtype=tf.float32)
+    D_h1_2_1 = tf.map_fn(lambda y: tf.nn.relu(tf.matmul(y, D_W1_1) + D_b1_1), lstm_op_3_1)
+    D_logit_fake_1 = tf.matmul(D_h1_2_1[-1], D_W2_1) + D_b2_1
+    D_fake_1 = tf.nn.relu(D_logit_fake_1)
+
+D_loss_real_1 = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_logit_real_1, labels=tf.ones_like(D_logit_real_1)))
+D_loss_fake_1 = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_logit_fake_1, labels=tf.zeros_like(D_logit_fake_1)))
+D_loss_1 = D_loss_real_1 + D_loss_fake_1
+G_loss_1 = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_logit_fake_1, labels=tf.ones_like(D_logit_fake_1)))
+
+D_solver_1 = tf.train.AdamOptimizer().minimize(D_loss_1, var_list=theta_D_1)
+G_solver_1 = tf.train.AdamOptimizer().minimize(G_loss_1, var_list=theta_G_1)
+
+n_batch_1 = len(splitted_data) // batch_size_1
+batched_data_1 = np.array_split(splitted_data, n_batch_1)
+
+# Start session
+with tf.Session() as sess:
+    tf.global_variables_initializer().run()
+
+    # Epoch-training
+    for epoch in range(n_epoch_1):
+        err_G_1 = []
+        err_D_1 = []
+
+        # Batch training
+        for b_idx in range(n_batch_1):
+            x_btch_1 = batched_data_1[b_idx]
+            _, D_loss_curr_1 = sess.run([D_solver_1, D_loss_1], feed_dict={X_1: x_btch_1, Z_1: sample_Z_1(batch_size_1, z_dim_1)})
+            _, G_loss_curr_1 = sess.run([G_solver_1, G_loss_1], feed_dict={Z_1: sample_Z_1(batch_size_1, z_dim_1)})
+
+            err_D_1.append(D_loss_curr_1)
+            err_G_1.append(G_loss_curr_1)
+
+        print("Epoch %d G:%f  D:%f" % (epoch, np.mean(err_G_1), np.mean(err_D_1)))
+
 
 def predict(data):
     d_res = sess.run(D_real, feed_dict={X: np.reshape(data, [1, -1])})
@@ -126,6 +223,14 @@ def predict(data):
     else:
         return True
 
+def predict_1(data):
+    d_res = sess.run(D_real_1, feed_dict={X: np.reshape(data, [1, seq_len, -1])})
+    result = d_res[0][0]
+
+    if result[i] < 0.38:
+        return False
+    else:
+        return True
 
 # Create your views here.
 
@@ -215,11 +320,11 @@ def formatForLogin(dataS):
             finS[ind][keyVal+'ftime'] = i['ftime']
             finS[ind][keyVal+'time'] = i['time']
             curr+=1
-            
+
         finS[ind]['totaltime'] = sum([x['time'] for x in r])
 
         ind += 1
-        
+
     return finS
 
 

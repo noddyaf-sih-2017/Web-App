@@ -8,9 +8,6 @@ from .models import OTP
 
 
 
-
-
-
 admin.site.register(OTP)
 
 

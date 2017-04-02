@@ -137,7 +137,7 @@ for i in range(len(data_1) - seq_len):
 
 z_dim_1 = 5
 batch_size_1 = 40
-n_epoch_1 = 100
+n_epoch_1 = 2
 rnn_neurons_1 = 5
 
 X_1 = tf.placeholder(tf.float32, shape=[None, seq_len, 7])
@@ -194,24 +194,24 @@ n_batch_1 = len(splitted_data) // batch_size_1
 batched_data_1 = np.array_split(splitted_data, n_batch_1)
 
 # Start session
-with tf.Session() as sess:
-    tf.global_variables_initializer().run()
+sess1 = tf.Session()
+tf.global_variables_initializer().run(session=sess1)
 
-    # Epoch-training
-    for epoch in range(n_epoch_1):
-        err_G_1 = []
-        err_D_1 = []
+# Epoch-training
+for epoch in range(n_epoch_1):
+    err_G_1 = []
+    err_D_1 = []
 
-        # Batch training
-        for b_idx in range(n_batch_1):
-            x_btch_1 = batched_data_1[b_idx]
-            _, D_loss_curr_1 = sess.run([D_solver_1, D_loss_1], feed_dict={X_1: x_btch_1, Z_1: sample_Z_1(batch_size_1, z_dim_1)})
-            _, G_loss_curr_1 = sess.run([G_solver_1, G_loss_1], feed_dict={Z_1: sample_Z_1(batch_size_1, z_dim_1)})
+    # Batch training
+    for b_idx in range(n_batch_1):
+        x_btch_1 = batched_data_1[b_idx]
+        _, D_loss_curr_1 = sess1.run([D_solver_1, D_loss_1], feed_dict={X_1: x_btch_1, Z_1: sample_Z_1(batch_size_1, z_dim_1)})
+        _, G_loss_curr_1 = sess1.run([G_solver_1, G_loss_1], feed_dict={Z_1: sample_Z_1(batch_size_1, z_dim_1)})
 
-            err_D_1.append(D_loss_curr_1)
-            err_G_1.append(G_loss_curr_1)
+        err_D_1.append(D_loss_curr_1)
+        err_G_1.append(G_loss_curr_1)
 
-        print("Epoch %d G:%f  D:%f" % (epoch, np.mean(err_G_1), np.mean(err_D_1)))
+    print("Epoch %d G:%f  D:%f" % (epoch, np.mean(err_G_1), np.mean(err_D_1)))
 
 
 def predict(data):
@@ -224,10 +224,10 @@ def predict(data):
         return True
 
 def predict_1(data):
-    d_res = sess.run(D_real_1, feed_dict={X: np.reshape(data, [1, seq_len, -1])})
+    d_res = sess1.run(D_real_1, feed_dict={X_1: np.reshape(data, [1, seq_len, -1])})
     result = d_res[0][0]
 
-    if result[i] < 0.38:
+    if result < 0.38:
         return False
     else:
         return True
@@ -247,25 +247,27 @@ def cont_auth(req):
 
 
 def send_details(req):
-	username = req.POST['username']
-	password = req.POST['password']
-	jsonR = req.POST['json']
-	wasEntered = not (jsonR == 'nope')
-	# Authenticate here
-	authenticated = True
-	# Authenticate end
+    username = req.POST['username']
+    password = req.POST['password']
+    jsonR = req.POST['json']
+    wasEntered = not (jsonR == 'nope')
+    # Authenticate here
+    authenticated = True
+    # Authenticate end
 
-	if authenticated and not jsonR == 'nope':
-		processedJson = preprocess(jsonR)
-		verify_dynamics = check_keyboard_dynamics(username, processedJson)
-		if not verify_dynamics:
-			return redirect(req, reverse('otp_login'))
-		else:
-			with open(os.path.join(BASE,  username + '.csv'), 'a+') as f:
-				dFile = File(f)
-				dFile.write(processedJson)
+    if authenticated and not jsonR == 'nope':
+        processedJson = preprocess(jsonR)
+        verify_dynamics = predict_1(processedJson)
 
-	return JsonResponse({"authenticated": authenticated, "wasEntered": wasEntered})
+        print('VERIFY DYNAMICS', verify_dynamics)
+        if not verify_dynamics:
+            authenticated = False
+		# else:
+		# 	with open(os.path.join(BASE,  username + '.csv'), 'a+') as f:
+		# 		dFile = File(f)
+		# 		dFile.write(processedJson)
+
+    return JsonResponse({"authenticated": authenticated, "wasEntered": wasEntered})
 
 
 def send_login_details(req):
@@ -285,27 +287,6 @@ def send_login_details(req):
             authenticated = False
 
     return JsonResponse({"authenticated": authenticated})
-
-
-def predict_login(username, processed):
-	print('login', processed)
-	return True
-
-
-def check_keyboard_dynamics(username, processed):
-	# processed.csv or processed.nparray
-	print(processed)
-	username = username.strip()
-	try:
-		with open(os.path.join(BASE, username + '.csv'), 'r') as f:
-			ff = File(f)
-			processed_data = ff.read()
-
-	except IOError:
-		#file doesnt exist
-		pass
-
-	return True
 
 
 def formatForLogin(dataS):
@@ -350,4 +331,4 @@ def preprocess(dataS):
 	finS = formatData(json.loads('[' + dataS[:-1] + ']'))
 	dfS = pd.DataFrame(finS)
 	dfS.fillna(dfS.mean(), inplace=True)
-	return dfS.to_csv(index=False, header=None)
+	return dfS.as_matrix().reshape((50, 7))

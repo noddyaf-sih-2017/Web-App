@@ -3,7 +3,7 @@
 <html >
 <head>
   <meta charset="UTF-8">
-  <title>Login/Logout animation concept</title>
+  <title>Training</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
   
   <link rel='stylesheet prefetch' href='http://fonts.googleapis.com/css?family=Open+Sans'>
@@ -18,7 +18,8 @@
   <div class="demo">
     <div class="login">
       <img src = "{%static 'css/isro.png' %}" style = "padding-left:25%; padding-top: 30%;  width:80%; height:40%; z-index:2;">
-      <div class="login__form">
+      <h2 style = "color:white; text-align: center;">Training</h2>
+       <div class="login__form">
         <div class="login__row">
           <p id = "count" style = "color:white; font-size:26px;">Enter password 30 times</p>
         </div>
@@ -52,9 +53,13 @@
 
   let decrement = () =>
   {
-    i--;
-    document.getElementById("count").innerHTML = "Enter password " + i + " more times";
-    document.getElementById("text").value = "";
+    if(i>0){
+      i--;
+      document.getElementById("count").innerHTML = "Enter password " + i + " more times";
+      document.getElementById("text").value = "";
+    }
+    else
+      window.location = "/login/"
   }
 
   </script>

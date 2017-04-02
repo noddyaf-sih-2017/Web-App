@@ -15,7 +15,7 @@ def index(req):
 
 
 def login(req):
-	return render(req, 'login.html', {})
+	return render(req, 'login.html', {"username": "Saumitra"})
 
 
 def cont_auth(req):
@@ -44,9 +44,31 @@ def send_details(req):
 	return JsonResponse({"authenticated": authenticated, "wasEntered": wasEntered})
 
 
+def send_login_details(req):
+	username = req.POST['username']
+	password = req.POST['password']
+	jsonR = req.POST['json']
+	# Authenticate here
+	authenticated = True
+	# Authenticate end
+	if authenticated:
+		processedJson = preprocessLogin(jsonR)
+		verify = predict_login(username, processedJson)
+
+		if not verify:
+			authenticated = False
+
+	return JsonResponse({"authenticated": authenticated})
+
+
+def predict_login(username, processed):
+	print('login', processed)
+	return True
+
+
 def check_keyboard_dynamics(username, processed):
 	# processed.csv or processed.nparray
-	# print processed
+	print(processed)
 	username = username.strip()
 	try:
 		with open(os.path.join(BASE, username + '.csv'), 'r') as f:
@@ -60,6 +82,26 @@ def check_keyboard_dynamics(username, processed):
 	return True
 
 
+def formatForLogin(dataS):
+    finS = []
+    ind = 0
+    for r in dataS:
+        curr = 0
+        finS.append({})
+        for i in r:
+            keyVal = i['key'] + '-' +str(curr) + '-'
+            finS[ind][keyVal+'kftime'] = i['kftime']
+            finS[ind][keyVal+'ftime'] = i['ftime']
+            finS[ind][keyVal+'time'] = i['time']
+            curr+=1
+            
+        finS[ind]['totaltime'] = sum([x['time'] for x in r])
+
+        ind += 1
+        
+    return finS
+
+
 def formatData(dataS):
     finS = []
     for r in dataS:
@@ -67,6 +109,15 @@ def formatData(dataS):
             finS.append(i)
                     
     return finS
+
+
+def preprocessLogin(dataS):
+	finS = formatForLogin(json.loads('[' + dataS[:-1] + ']'))
+	dfS = pd.DataFrame(finS)
+	dfS.drop('p-0-ftime', axis=1, inplace=True)
+	dfS.fillna(dfS.mean(), inplace=True)
+	print(dfS.head())
+	return dfS.to_csv(index=False, header=None)
 
 
 def preprocess(dataS):

@@ -5,10 +5,12 @@ let newstroke = new Object()
 let downbuffer =[]
 let upbuffer =[]
 let writebuf = []
+let invalid = false
 
-
+const passwordToCheck = 'pass@123'
 const textField = document.getElementById('text')
 const userField = document.getElementById('username')
+
 let records= () =>
 {
   let username = userField.value
@@ -23,17 +25,26 @@ let records= () =>
     return false
   }
 
+  if(password != passwordToCheck){
+    window.location.reload()
+  }
+  
+  if(invalid){
+    window.location.href= '/'
+  }
+
   if(writebuf.length > 0){
-    qwest.post('/send_details/', {
+    qwest.post('/send_login_details/', {
       username: username,
       password: textField.value,
-      json: JSON.stringify(writebuf)+','
+      json: JSON.stringify(writebuf)+',',
     })
     .then((xhr, response)=>{
         writebuf  = []
         buffer = []
         downbuffer=[]
         upbuffer=[]
+        invalid=false
 
         if(response.authenticated){
           window.location.href = '/'
@@ -51,9 +62,12 @@ textField.onkeydown = (e) =>{
     let timestamp = Date.now() | 0
     let stroke = {
         key: e.key,
-        keyCode: e.which,
         time: timestamp
 
+    }
+
+    if(stroke["key"] == "Backspace"){
+        invalid = true
     }
   
     if(stroke["key"] == "Enter"){
@@ -71,11 +85,10 @@ textField.onkeyup = (e) => {
     let timestamp = Date.now() | 0
     let stroke = {
         key: e.key,
-        keyCode: e.which,
         time: timestamp
     }
 
-    if(stroke["key"] != "Enter" && stroke["key"] != "Shift")
+    if(stroke["key"] != "Backspace" && stroke["key"] != "Enter" && stroke["key"] != "Shift")
     {
         upbuffer.push(stroke)
         let up = upbuffer.shift()
@@ -84,15 +97,12 @@ textField.onkeyup = (e) => {
         ft   = flight time
         kft = key press plus flight time
         time = key press time
-        */
-        let ftime
-        try{
-            ftime=-(oldstroke.time-down.time)
-        }
-        catch(e){
-            ftime = 0
-        }
 
+
+        */
+
+        
+        let ftime=-(oldstroke.time-down.time)
         if (ftime<0)
         {
             ftime=0
@@ -102,29 +112,20 @@ textField.onkeyup = (e) => {
             ftime=null
         }
 
+        oldstroke=up
 
         let time = up.time-down.time
-        let uutime=oldstroke.time-up.time;
-        let dutime=oldstroke1.time-up.time;
-        let ddtime=oldstroke1.time-down.time;
         let kftime= ftime+time
         
         let _stroke = new Object()
-        _stroke.key=down.keyCode
+        _stroke.key=down.key
         _stroke.kftime=kftime
-       
+        
         _stroke.time=time
         _stroke.ftime=ftime
-
-        _stroke.uutime=(-uutime);
-        _stroke.ddtime=(-ddtime);
-        _stroke.dutime=(-dutime);
-    
+        
         buffer.push(_stroke)
         writebuf.push(_stroke)
-
-        oldstroke=up
-        oldstroke1 = down
 
     }
 }

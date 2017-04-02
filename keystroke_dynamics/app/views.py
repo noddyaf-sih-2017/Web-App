@@ -46,11 +46,11 @@ def otp(request):
 
 def send_otp(request):
 	print(123)
-	num = "9819515144"
+	num = "9867328811"
 	conn = http.client.HTTPConnection("2factor.in")
 	#OTP.objects.create(number = '9819515144')
 	payload = "{}"
-	url = "/API/V1/6c74605e-174a-11e7-9462-00163ef91450/SMS/"+num+"/766461"
+	url = "/API/V1/3be6f8b8-1781-11e7-9462-00163ef91450/SMS/"+num+"/323184"
 	conn.request("GET", url, payload)
 	res = conn.getresponse()
 	data = res.read()
@@ -58,7 +58,7 @@ def send_otp(request):
 	data = json.loads(data)
 	#objects = OTP.objects.filter(number__icontains = '9819515144')
 	#objects[0].session_id= data['Details']
-	student=OTP(session_id=data['Details'],otp=766461,number = '9819515144')
+	student=OTP(session_id=data['Details'],otp=323184,number = '9867328811')
 	student.save()
 	return submit_otp(request)
 
@@ -73,7 +73,7 @@ def submit_otp(request):
 		otp_form = OTPForm(request.POST)
 		if otp_form.is_valid():
 			cd = otp_form.cleaned_data
-			if(cd['otp']!='766461'):
+			if(cd['otp']!='323184'):
 				return render(request,'verify_wrong.html')
 			else:
 				return render(request,'auth.html')		
@@ -105,7 +105,7 @@ def verify_otp(request):
 	print (a )'''
 	conn = http.client.HTTPConnection("2factor.in")
 	payload = "{}"
-	conn.request("GET", "/API/V1/643743b1-1698-11e7-9462-00163ef91450/SMS/VERIFY/"+a.session_id+"/766461", payload)
+	conn.request("GET", "/API/V1/643743b1-1698-11e7-9462-00163ef91450/SMS/VERIFY/"+a.session_id+"/323184", payload)
 	res = conn.getresponse()
 	data = res.read()	
 	print(data.decode("utf-8"))

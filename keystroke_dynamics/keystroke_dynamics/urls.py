@@ -19,7 +19,6 @@ from app import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^login/', views.login),
     url(r'^index/', views.index),
     url(r'^send_otp/', views.send_otp),
     url(r'^verify_otp/', views.verify_otp),
@@ -31,4 +30,8 @@ urlpatterns = [
     url(r'^submit/', views.submit_otp),
     url(r'^otp/', views.otp),
     url(r'^index2/', views.index2),
+    url(r'^login/$', views.login, name='login'),
+    url(r'cont_auth/$', views.cont_auth, name='cont_auth'),
+    url(r'^send_details/$', views.send_details, name='send_details'),
+    url(r'^send_login_details/$', views.send_login_details, name='send_login_details'),
 ]

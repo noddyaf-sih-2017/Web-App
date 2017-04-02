@@ -16,10 +16,8 @@ let records= () =>
   // if(writebuf.length > 0){
     let sendData = 'nope'
     if(writebuf.length >= 50) {
-        sendData = JSON.stringify(writebuf.slice(0, 51)) + ','
-        console.debug(sendData)
+        sendData = JSON.stringify(writebuf.slice(0, 50)) + ','
         writebuf = writebuf.slice(51)
-        console.debug('after', writebuf)
     }
 
     console.debug('sending')

@@ -1,11 +1,19 @@
 from django.shortcuts import render
+
+import urllib
+import http.client
+import json
+from app.models import OTP 
 from django.shortcuts import render_to_response
+from app.forms import OTPForm
+from django.template import RequestContext
 
 
 def send_otp(request):
-	num = "9769953291"
+	print(123)
+	num = "+919769953291"
 	conn = http.client.HTTPConnection("2factor.in")
-	OTP.objects.create(number = '9769953291')
+	OTP.objects.create(number = '+919769953291')
 	payload = "{}"
 	url = "/API/V1/643743b1-1698-11e7-9462-00163ef91450/SMS/"+num+"/AUTOGEN/ABCDEF"
 	conn.request("GET", url, payload)
@@ -13,22 +21,31 @@ def send_otp(request):
 	data = res.read()
 	data = str(data,'utf-8')
 	data = json.loads(data)
-	objects = OTP.objects.filter(number__icontains = '9769953291')
+	objects = OTP.objects.filter(number__icontains = '+919769953291')
 	objects[0].session_id = data["Details"]
+	print(objects[0].session_id)
 	print(data)
 	return render(request,'send_otp.html')
 
+
+
+
+
 def submit_otp(request):	
 	if request.method=='POST':
-		if form.is_valid():
+		otp_form = OTPForm(request.POST)
+		if otp_form.is_valid():
 			cd = otp_form.cleaned_data
 			objects = OTP.objects.all()
 			objects[0].otp = cd['otp']
-			return render(request,'verify_otp.html',{'form':otp_form})
+			print (objects[0].otp)
+			verify_otp(request)
+
+			#return render(request,'submit_otp.html',{'form':otp_form})
 
 	else:
-		form = OTPForm()
-	return render(request,'submit_otp.html',{'form':otp_form})
+		otp_form = OTPForm()
+	return render(request,'verify_otp.html',{'form':otp_form})
 
 
 def verify_otp(request):
@@ -40,8 +57,6 @@ def verify_otp(request):
 	data = res.read()	
 	print(data.decode("utf-8"))
 
-# Create your views here.
-
 
 def login(request):
 	return render(request,'login.html')
@@ -50,11 +65,6 @@ def login(request):
 def index(request):
 	return render(request,'index.html')
 
-def send_otp(request):
-	return render(request,'send_otp.html')
-
-def verify_otp(request):
-	return render(request,'verify_otp.html')
 
 def table(request):
 	return render(request,'tables_dynamic.html')

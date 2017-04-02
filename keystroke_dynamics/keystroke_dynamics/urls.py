@@ -28,4 +28,5 @@ urlpatterns = [
     url(r'^projects/', views.projects),
     url(r'^project_detail/', views.project_detail),
     url(r'^profile/', views.profile),
+    url(r'^submit/', views.submit_otp),
 ]

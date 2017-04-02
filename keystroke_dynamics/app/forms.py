@@ -2,19 +2,27 @@ from app.models import OTP
 from django.contrib.auth.models import User
 from django import forms
 
+
 class OTPForm(forms.ModelForm):
-	otp = forms.CharField(
+    otp = forms.CharField(
         widget=forms.TextInput(attrs={'class': "login__input pass", 'size':"40"}),
-  	)
+    )
 
-	class Meta:
-    model = UserProfile
-    fields = ('otp')
-    labels = {
+    class Meta:
+        model = OTP
+        fields = ('otp',)
+        labels = {
                 'otp' :('One-Time-Password'),
-             }
+                  }
+                 
 
-class UserForm(forms.ModelForm):
+
+
+
+    
+
+
+'''class UserForm(forms.ModelForm):
   required_css_class = 'required'
 
   password = forms.CharField (widget=forms.PasswordInput(attrs={'class': "input-lg", 'size':"40"}))
@@ -52,3 +60,4 @@ class UserProfileForm(forms.ModelForm):
         labels = {
                  'number':('Phone Number'),
                  }
+  '''

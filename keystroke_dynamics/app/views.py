@@ -115,6 +115,11 @@ def verify_otp(request):
 def index(request):
 	return render(request,'index.html')
 
+def register(request):
+	return render(request,'register.html')
+
+def train(request):
+	return render(request,'train.html')
 
 def table(request):
 	return render(request,'tables_dynamic.html')

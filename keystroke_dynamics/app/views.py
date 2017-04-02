@@ -122,9 +122,10 @@ def predict(data):
     result = d_res[0][0]
 
     if result < 0.5:
-        False
+        return False
     else:
-        True
+        return True
+
 
 # Create your views here.
 
@@ -163,20 +164,22 @@ def send_details(req):
 
 
 def send_login_details(req):
-	username = req.POST['username']
-	password = req.POST['password']
-	jsonR = req.POST['json']
-	# Authenticate here
-	authenticated = True
-	# Authenticate end
-	if authenticated:
-		processedJson = preprocessLogin(jsonR)
-		verify = predict_login(username, processedJson)
+    username = req.POST['username']
+    password = req.POST['password']
+    jsonR = req.POST['json']
+    # Authenticate here
+    authenticated = True
+    # Authenticate wasEntere
+    if authenticated:
+        processedJson = preprocessLogin(jsonR)
+        print('PROCESSED', processedJson)
+        verify = predict(processedJson)
+        print('VERIFICATION', verify)
 
-		if not verify:
-			authenticated = False
+        if not verify:
+            authenticated = False
 
-	return JsonResponse({"authenticated": authenticated})
+    return JsonResponse({"authenticated": authenticated})
 
 
 def predict_login(username, processed):
@@ -235,7 +238,7 @@ def preprocessLogin(dataS):
 	dfS.drop('p-0-ftime', axis=1, inplace=True)
 	dfS.fillna(dfS.mean(), inplace=True)
 	print(dfS.head())
-	return dfS.to_csv(index=False, header=None)
+	return dfS.as_matrix().ravel()
 
 
 def preprocess(dataS):

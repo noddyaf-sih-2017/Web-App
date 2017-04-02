@@ -10,6 +10,11 @@ let invalid = false
 const passwordToCheck = 'pass@123'
 const textField = document.getElementById('text')
 const userField = document.getElementById('username')
+const submitButton = document.getElementById('save')
+
+submitButton.addEventListener('click', (e)=>{
+    records()
+})
 
 let records= () =>
 {
@@ -28,9 +33,9 @@ let records= () =>
   if(password != passwordToCheck){
     window.location.reload()
   }
-  
+
   if(invalid){
-    window.location.href= '/'
+    window.location.reload()
   }
 
   if(writebuf.length > 0){

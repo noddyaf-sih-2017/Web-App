@@ -16,6 +16,8 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from app import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -36,4 +38,4 @@ urlpatterns = [
     url(r'cont_auth/$', views.cont_auth, name='cont_auth'),
     url(r'^send_details/$', views.send_details, name='send_details'),
     url(r'^send_login_details/$', views.send_login_details, name='send_login_details'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
